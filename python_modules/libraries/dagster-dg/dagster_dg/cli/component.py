@@ -10,13 +10,8 @@ from typer.rich_utils import rich_format_help
 
 from dagster_dg.cli.check_utils import error_dict_to_formatted_error
 from dagster_dg.cli.global_options import GLOBAL_OPTIONS, dg_global_options
-from dagster_dg.component import (
-    ComponentKey,
-    GlobalComponentKey,
-    LocalComponentKey,
-    RemoteComponentRegistry,
-    RemoteComponentType,
-)
+from dagster_dg.component import RemoteComponentRegistry, RemoteComponentType
+from dagster_dg.component_key import ComponentKey, GlobalComponentKey, LocalComponentKey
 from dagster_dg.config import (
     get_config_from_cli_context,
     has_config_on_cli_context,
@@ -316,7 +311,7 @@ def component_check_command(
                 continue
 
             component_key = ComponentKey.from_typename(
-                component_doc_tree.value.get("type"), str(component_path)
+                component_doc_tree.value.get("type"), dirpath=component_path.parent
             )
             component_contents_by_key[component_key] = component_doc_tree
             if isinstance(component_key, LocalComponentKey):
@@ -326,7 +321,6 @@ def component_check_command(
     component_registry = RemoteComponentRegistry.from_dg_context(
         dg_context, local_component_type_dirs=list(local_component_dirs)
     )
-
     for component_key, component_doc_tree in component_contents_by_key.items():
         try:
             json_schema = component_registry.get(component_key).component_params_schema or {}
@@ -340,7 +334,7 @@ def component_check_command(
                 (
                     None,
                     ValidationError(
-                        f"Component type '{component_key.to_typename()}' not found in {component_key.dirpath}."
+                        f"Component type '{component_key.to_typename()}' not found in {component_key.python_file}."
                         if isinstance(component_key, LocalComponentKey)
                         else f"Component type '{component_key.to_typename()}' not found."
                     ),
