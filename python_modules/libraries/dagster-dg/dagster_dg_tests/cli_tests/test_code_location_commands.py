@@ -102,25 +102,27 @@ def test_code_location_scaffold_editable_dagster_success(mode: str, monkeypatch)
         with open("code_locations/foo-bar/pyproject.toml") as f:
             toml = tomli.loads(f.read())
             assert toml["tool"]["uv"]["sources"]["dagster"] == {
-                "path": f"{dagster_git_repo_dir}/python_modules/dagster",
+                "path": f"{dagster_git_repo_dir / 'python_modules' / 'dagster'}",
                 "editable": True,
             }
             assert toml["tool"]["uv"]["sources"]["dagster-pipes"] == {
-                "path": f"{dagster_git_repo_dir}/python_modules/dagster-pipes",
+                "path": str(dagster_git_repo_dir / "python_modules" / "dagster-pipes"),
                 "editable": True,
             }
             assert toml["tool"]["uv"]["sources"]["dagster-webserver"] == {
-                "path": f"{dagster_git_repo_dir}/python_modules/dagster-webserver",
+                "path": str(dagster_git_repo_dir / "python_modules" / "dagster-webserver"),
                 "editable": True,
             }
             assert toml["tool"]["uv"]["sources"]["dagster-components"] == {
-                "path": f"{dagster_git_repo_dir}/python_modules/libraries/dagster-components",
+                "path": str(
+                    dagster_git_repo_dir / "python_modules" / "libraries" / "dagster-components"
+                ),
                 "editable": True,
             }
             # Check for presence of one random package with no component to ensure we are
             # preemptively adding all packages
             assert toml["tool"]["uv"]["sources"]["dagstermill"] == {
-                "path": f"{dagster_git_repo_dir}/python_modules/libraries/dagstermill",
+                "path": str(dagster_git_repo_dir / "python_modules" / "libraries" / "dagstermill"),
                 "editable": True,
             }
 

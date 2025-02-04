@@ -151,7 +151,8 @@ def _assert_no_child_processes_running(child_procs: list[psutil.Process]) -> Non
 
 def _get_child_processes(pid) -> list[psutil.Process]:
     parent = psutil.Process(pid)
-    return parent.children(recursive=True)
+    # Windows will sometimes return the parent process as its own child. Filter this out.
+    return [p for p in parent.children(recursive=True) if p.pid != pid]
 
 
 def _find_free_port() -> int:

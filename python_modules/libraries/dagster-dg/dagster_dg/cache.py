@@ -3,7 +3,7 @@ import shutil
 import sys
 from collections.abc import Sequence
 from pathlib import Path
-from typing import Final, Literal, Optional, Union
+from typing import Final, Literal, Optional
 
 from typing_extensions import Self, TypeAlias
 
@@ -16,9 +16,7 @@ from dagster_dg.utils import (
 
 _CACHE_CONTAINER_DIR_NAME: Final = "dg-cache"
 
-CachableDataType: TypeAlias = Union[
-    Literal["component_registry_data"], Literal["all_components_schema"]
-]
+CachableDataType: TypeAlias = Literal["component_registry_data", "all_components_schema"]
 
 
 def get_default_cache_dir() -> Path:
@@ -78,6 +76,7 @@ class DgCache:
 
     def clear_all(self) -> None:
         shutil.rmtree(self._root_path)
+        assert not self._root_path.exists()
         self.log(f"CACHE [clear-all]: {self._root_path}")
 
     def get(self, key: tuple[str, ...]) -> Optional[str]:

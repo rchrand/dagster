@@ -185,7 +185,8 @@ def _format_forwarded_option(option: str, value: object) -> list[str]:
 
 
 def _get_child_process_pid(proc: "subprocess.Popen") -> int:
-    children = psutil.Process(proc.pid).children(recursive=False)
+    # Windows will sometimes return the parent process as its own child. Filter this out.
+    children = [p for p in psutil.Process(proc.pid).children(recursive=False) if p.pid != proc.pid]
     if len(children) != 1:
         raise ValueError(f"Expected exactly one child process, but found {len(children)}")
     return children[0].pid

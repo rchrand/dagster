@@ -82,6 +82,12 @@ def is_executable_available(command: str) -> bool:
     return bool(shutil.which(command))
 
 
+# Short for "normalize path"-- use this to get the platform-correct string representation of an
+# existing string path.
+def npath(path: str):
+    return str(Path(path))
+
+
 # uv commands should be executed in an environment with no pre-existing VIRTUAL_ENV set. If this
 # variable is set (common during development) and does not match the venv resolved by uv, it prints
 # undesireable warnings.

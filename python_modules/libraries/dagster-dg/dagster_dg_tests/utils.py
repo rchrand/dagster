@@ -18,7 +18,7 @@ from dagster_dg.cli import (
     DG_CLI_MAX_OUTPUT_WIDTH,
     cli as dg_cli,
 )
-from dagster_dg.utils import discover_git_root, pushd
+from dagster_dg.utils import discover_git_root, npath, pushd
 from typing_extensions import Self
 
 
@@ -35,9 +35,14 @@ def isolated_components_venv(runner: Union[CliRunner, "ProxyRunner"]) -> Iterato
         for path in libraries_paths:
             install_args.extend(["-e", str(path)])
         subprocess.run(
-            ["uv", "pip", "install", "--python", ".venv/bin/python", *install_args], check=True
+            ["uv", "pip", "install", "--python", npath(".venv/bin/python"), *install_args],
+            check=True,
         )
-        with modify_environment_variable("PATH", f"{Path.cwd()}/.venv/bin:{os.environ['PATH']}"):
+
+        venv_bin = Path.cwd() / ".venv" / "bin"
+        with modify_environment_variable(
+            "PATH", os.pathsep.join([str(venv_bin), os.environ["PATH"]])
+        ):
             yield
 
 
@@ -71,7 +76,7 @@ def isolated_example_code_location_foo_bar(
     dagster_git_repo_dir = str(discover_git_root(Path(__file__)))
     if in_deployment:
         fs_context = isolated_example_deployment_foo(runner)
-        code_loc_path = "code_locations/foo-bar"
+        code_loc_path = npath("code_locations/foo-bar")
     else:
         fs_context = runner.isolated_filesystem()
         code_loc_path = "foo-bar"
@@ -112,7 +117,7 @@ def isolated_example_component_library_foo_bar(
             "foo-bar",
         )
         with clear_module_from_cache("foo_bar"), pushd("foo-bar"):
-            shutil.rmtree("foo_bar/components")
+            shutil.rmtree(npath("foo_bar/components"))
 
             # Make it not a code location
             with modify_pyproject_toml() as pyproject_toml:
@@ -129,7 +134,8 @@ def isolated_example_component_library_foo_bar(
 
             # Install the component library into our venv
             subprocess.run(
-                ["uv", "pip", "install", "--python", "../.venv/bin/python", "-e", "."], check=True
+                ["uv", "pip", "install", "--python", npath("../.venv/bin/python"), "-e", "."],
+                check=True,
             )
             yield
 

@@ -4,7 +4,7 @@ import textwrap
 from pathlib import Path
 
 import pytest
-from dagster_dg.utils import ensure_dagster_dg_tests_import
+from dagster_dg.utils import ensure_dagster_dg_tests_import, npath
 
 ensure_dagster_dg_tests_import()
 
@@ -222,14 +222,14 @@ def test_component_scaffold_succeeds_scaffolded_component_type() -> None:
 # ##### REAL COMPONENTS
 
 
-dbt_project_path = "../stub_code_locations/dbt_project_location/components/jaffle_shop"
+dbt_project_path = Path("../stub_code_locations/dbt_project_location/components/jaffle_shop")
 
 
 @pytest.mark.parametrize(
     "params",
     [
         ["--json-params", json.dumps({"project_path": str(dbt_project_path)})],
-        ["--project-path", dbt_project_path],
+        ["--project-path", str(dbt_project_path)],
     ],
 )
 def test_scaffold_dbt_project_instance(params) -> None:
@@ -254,7 +254,7 @@ def test_scaffold_dbt_project_instance(params) -> None:
         assert component_yaml_path.exists()
         assert "type: dagster_components.dbt_project" in component_yaml_path.read_text()
         assert (
-            "stub_code_locations/dbt_project_location/components/jaffle_shop"
+            npath("stub_code_locations/dbt_project_location/components/jaffle_shop")
             in component_yaml_path.read_text()
         )
 
