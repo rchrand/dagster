@@ -1804,9 +1804,8 @@ class DagsterInstance(DynamicPartitionsStore):
     def add_snapshot(
         self,
         snapshot: Union["JobSnap", "ExecutionPlanSnapshot"],
-        snapshot_id: Optional[str] = None,
     ) -> None:
-        return self._run_storage.add_snapshot(snapshot, snapshot_id)
+        return self._run_storage.add_snapshot(snapshot)
 
     @traced
     def handle_run_event(self, run_id: str, event: "DagsterEvent") -> None:
