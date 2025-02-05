@@ -243,7 +243,7 @@ class ComponentLoadContext:
     def with_rendering_scope(self, rendering_scope: Mapping[str, Any]) -> "ComponentLoadContext":
         return dataclasses.replace(
             self,
-            templated_value_resolver=self.resolve_context.with_scope(**rendering_scope),
+            resolve_context=self.resolve_context.with_scope(**rendering_scope),
         )
 
     def for_decl_node(self, decl_node: ComponentDeclNode) -> "ComponentLoadContext":

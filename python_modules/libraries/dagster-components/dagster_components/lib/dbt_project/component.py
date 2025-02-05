@@ -25,7 +25,7 @@ from dagster_components.lib.dbt_project.scaffolder import DbtProjectComponentSca
 from dagster_components.utils import ResolvingInfo, get_wrapped_translator_class
 
 
-class DbtProjectParams(ResolvableModel):
+class DbtProjectParams(ResolvableModel["DbtProjectComponent"]):
     dbt: DbtCliResource
     op: Optional[OpSpecModel] = None
     asset_attributes: Annotated[

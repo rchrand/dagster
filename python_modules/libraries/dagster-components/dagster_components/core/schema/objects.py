@@ -27,15 +27,12 @@ class OpSpecModel(ResolvableModel):
         return self.resolve_as(OpSpecModel, context)
 
 
-class AssetDepModel(ResolvableModel):
+class AssetDepModel(ResolvableModel[AssetDep]):
     asset: str
     partition_mapping: Optional[str] = None
 
     def resolve_asset(self, context: ResolveContext) -> AssetKey:
         return AssetKey.from_coercible(context.resolve_value(self.asset))
-
-    def resolve(self, context: ResolveContext) -> AssetDep:
-        return self.resolve_as(AssetDep, context)
 
 
 class _ResolvableAssetAttributesMixin(BaseModel):
@@ -57,24 +54,18 @@ class _ResolvableAssetAttributesMixin(BaseModel):
     ] = None
 
 
-class AssetAttributesModel(_ResolvableAssetAttributesMixin, ResolvableModel):
+class AssetAttributesModel(_ResolvableAssetAttributesMixin, ResolvableModel[dict]):
     key: Optional[str] = None
 
     def resolve_key(self, context: ResolveContext) -> Optional[AssetKey]:
         return AssetKey.from_coercible(context.resolve_value(self.key)) if self.key else None
 
-    def resolve(self, context: ResolveContext) -> Mapping[str, Any]:
-        return self.resolve_as(dict, context)
 
-
-class AssetSpecModel(_ResolvableAssetAttributesMixin, ResolvableModel):
+class AssetSpecModel(_ResolvableAssetAttributesMixin, ResolvableModel[AssetSpec]):
     key: str
 
     def resolve_key(self, context: ResolveContext) -> AssetKey:
         return AssetKey.from_coercible(context.resolve_value(self.key))
-
-    def resolve(self, context: ResolveContext) -> AssetSpec:
-        return AssetSpec(**self.resolve_properties(context))
 
 
 class AssetSpecTransformModel(ResolvableModel):

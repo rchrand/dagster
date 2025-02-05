@@ -20,7 +20,7 @@ class TargetObject:
     inners: Optional[Sequence[InnerObject]]
 
 
-class InnerParams(ResolvableModel):
+class InnerParams(ResolvableModel[InnerObject]):
     val1: Annotated[
         Union[int, str], ResolvableFieldInfo(output_type=int, resolved_field_name="val1_renamed")
     ]
@@ -30,20 +30,14 @@ class InnerParams(ResolvableModel):
         resolved_val = context.resolve_value(self.val1)
         return resolved_val + 20
 
-    def resolve(self, context: ResolveContext) -> InnerObject:
-        return self.resolve_as(InnerObject, context)
 
-
-class TargetParams(ResolvableModel):
+class TargetParams(ResolvableModel[TargetObject]):
     int_val: Annotated[str, ResolvableFieldInfo(output_type=int)]
     str_val: Annotated[str, ResolvableFieldInfo(resolved_field_name="str_val_renamed")]
     inners: Annotated[
         Optional[Sequence[InnerParams]],
         ResolvableFieldInfo(output_type=Optional[Sequence[InnerObject]]),
     ] = None
-
-    def resolve(self, context: ResolveContext) -> TargetObject:
-        return self.resolve_as(TargetObject, context)
 
 
 def test_valid_resolution_simple() -> None:

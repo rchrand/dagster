@@ -32,7 +32,7 @@ class SlingReplicationSpec:
     translator: DagsterSlingTranslator
 
 
-class SlingReplicationParams(ResolvableModel):
+class SlingReplicationParams(ResolvableModel[SlingReplicationSpec]):
     path: str
     op: Annotated[Optional[OpSpecModel], ResolvableFieldInfo(resolved_field_name="op_spec")] = None
     asset_attributes: Annotated[
@@ -46,9 +46,6 @@ class SlingReplicationParams(ResolvableModel):
                 "stream_definition", self.asset_attributes or AssetAttributesModel(), resolver
             ),
         )
-
-    def resolve(self, context: ResolveContext) -> SlingReplicationSpec:
-        return self.resolve_as(SlingReplicationSpec, context)
 
 
 class SlingReplicationCollectionParams(ResolvableModel):
